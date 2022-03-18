@@ -1,15 +1,13 @@
 import os
 import sys
 
-try:
-    name = sys.argv[1]
-except IndexError:
-    print("Pass peer name as a command line argument!")
+cmdline_arguments = sys.argv
+
+if len(cmdline_arguments) != 2:
+    print("Incorrect number of arguments.")
     exit()
 
-if len(sys.argv) > 2:
-    print("Too many arguments.")
-    exit()
+name = cmdline_arguments[1]
 
 #get contents of the server config file
 file =  open("wg0.conf", "r")
@@ -25,7 +23,7 @@ for i in range(len(lines)):
 
 #exit if not found
 if name_string_number == None:
-    print("User not found")
+    print("User not found.")
     exit()
 
 config_section_index = name_string_number - 2
@@ -39,7 +37,6 @@ for i in range(5):
 with open("wg0.conf", "w") as file:
     for line in lines:
         file.write(line)
-
 
 file.close()
 
