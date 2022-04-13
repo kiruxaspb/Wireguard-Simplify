@@ -1,2 +1,2 @@
 #!/bin/bash
-wg >> info.txt
+wg show wg0 dump >> info.txt
