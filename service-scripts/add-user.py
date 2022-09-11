@@ -1,11 +1,12 @@
-import sys
 import os
+import sys
 import urllib.request
 
 
-PATH = os.path.abspath(os.getcwd())
-SERVER_GLOBAL_IP = urllib.request.urlopen('https://ident.me').read().decode('utf8')
 PORT = "51820"
+PATH = os.path.abspath(os.getcwd())
+PEER_PATH = os.path.abspath(os.getcwd()) + "/peers"
+SERVER_GLOBAL_IP = urllib.request.urlopen('https://ident.me').read().decode('utf8')
 
 
 def get_available_ip() -> str:
@@ -59,17 +60,17 @@ if name in get_user_list():
 ip = get_available_ip()
 
 # create peer directory
-os.system(f"mkdir {name}")
+os.system(f"mkdir {PEER_PATH}/{name}")
 
 # generate files with private and public keys
-os.system(f"wg genkey | tee {PATH}/{name}/{name}_privatekey | wg pubkey | tee {PATH}/{name}/{name}_publickey")
+os.system(f"wg genkey | tee {PEER_PATH}/{name}/{name}_privatekey | wg pubkey | tee {PEER_PATH}/{name}/{name}_publickey")
 
 # get keys from generated files
-file = open(f"{PATH}/{name}/{name}_privatekey", "r")
+file = open(f"{PEER_PATH}/{name}/{name}_privatekey", "r")
 private_key = (file.readline()).rstrip()
 file.close()
 
-file = open(f"{PATH}/{name}/{name}_publickey", "r")
+file = open(f"{PEER_PATH}/{name}/{name}_publickey", "r")
 public_key = (file.readline()).rstrip()
 file.close()
 
@@ -79,7 +80,7 @@ server_public_key = (file.readline()).rstrip()
 file.close()
 
 #write to client config file
-file = open(f"{PATH}/{name}/{name}.conf", "w")
+file = open(f"{PEER_PATH}/{name}/{name}.conf", "w")
 file.write(f"[Interface]\n")
 file.write(f"Address = {ip[:-3]}\n")
 file.write(f"PrivateKey = {private_key}\n")
@@ -102,14 +103,14 @@ file.write(f"AllowedIPs = {ip}\n")
 file.close()
 
 #generate qr
-os.system(f"qrencode -t png -o {PATH}/{name}/qr.png < {PATH}/{name}/{name}.conf")
+os.system(f"qrencode -t png -o {PEER_PATH}/{name}/qr.png < {PEER_PATH}/{name}/{name}.conf")
 
-file = open(f"{PATH}/{name}/qr.sh", "w")
+file = open(f"{PEER_PATH}/{name}/qr.sh", "w")
 file.write(f"#!/bin/bash\n")
-file.write(f"qrencode -t utf8 <  {PATH}/{name}/{name}.conf")
+file.write(f"qrencode -t utf8 <  {PEER_PATH}/{name}/{name}.conf")
 file.close()
 
-os.system(f"chmod ugo+x {PATH}/{name}/qr.sh")
+os.system(f"chmod ugo+x {PEER_PATH}/{name}/qr.sh")
 
 #restart the service
 os.system(f"systemctl restart wg-quick@wg0.service")

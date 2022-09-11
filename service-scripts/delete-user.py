@@ -1,6 +1,8 @@
 import os
 import sys
 
+PEER_PATH = os.path.abspath(os.getcwd()) + "/peers"
+
 cmdline_arguments = sys.argv
 
 if len(cmdline_arguments) != 2:
@@ -41,7 +43,7 @@ with open("wg0.conf", "w") as file:
 file.close()
 
 #delete user config folder
-os.system(f"rm -r {name}")
+os.system(f"rm -r {PEER_PATH}/{name}")
 
 #restart the service
 os.system("systemctl restart wg-quick@wg0.service")
